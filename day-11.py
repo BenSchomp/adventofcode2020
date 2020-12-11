@@ -114,45 +114,44 @@ def display( m ):
 		print()
 	print()
 
-def calc_neighbors( m, x, y, los ):
-	result = 0
+def calc_neighbors( m, p, los ):
+	count = 0
 
 	for dx in [-1, 0, 1]:
 		for dy in [-1, 0, 1]:
 			if dx == 0 and dy == 0:
 				continue
 
-			curX = x
-			curY = y
+			curX = p[0] + dx
+			curY = p[1] + dy
 
 			while True:
-				curX = curX + dx
-				curY = curY - dy 
-
 				if curX < 0 or curX >= width or curY < 0 or curY >= height:
 					break
 
 				if m[curY][curX] == '#':
-					result += 1
+					count += 1
 					break
 
 				if not los or m[curY][curX] == 'L':
 					break
 
-	return result
+				curX += dx
+				curY += dy 
 
-def doCycle( curMap, los, threshold ):
+	return count
+
+def do_cycle( curMap, los, threshold ):
 	newMap = copy.deepcopy(curMap)
 	changed = False
 	occupied = 0
 
-	curY = 0
-	for line in curMap:
-		curX = 0
-		for cell in line:
+	for curY in range(height):
+		for curX in range(width):
+			cell = curMap[curY][curX]
 
 			if cell != '.':
-				neighbors = calc_neighbors( curMap, curX, curY, los )
+				neighbors = calc_neighbors( curMap, (curX, curY), los )
 
 				if cell == 'L' and neighbors == 0:
 					newMap[curY][curX] = '#'
@@ -164,38 +163,30 @@ def doCycle( curMap, los, threshold ):
 			if newMap[curY][curX] == '#':
 				occupied += 1
 
-			curX += 1
-		curY += 1
-
 	return (newMap, changed, occupied)
 
-def part_one():
-	curMap = list()
-	for line in data:
-		s = list(line)
-		curMap.append( s )
-
+def part_one( floorplan ):
 	changed = True
 	while( changed ):
-		(curMap, changed, occupied) = doCycle( curMap, False, 4 )
+		(floorplan, changed, occupied) = do_cycle( floorplan, False, 4 )
 
-	display( curMap )
-	print( occupied )
+	return( occupied )
 
-def part_two():
-	curMap = list()
-	for line in data:
-		s = list(line)
-		curMap.append( s )
-
+def part_two( floorplan ):
 	changed = True
 	while( changed ):
-		(curMap, changed, occupied) = doCycle( curMap, True, 5 )
+		(floorplan, changed, occupied) = do_cycle( floorplan, True, 5 )
 
-	display( curMap )
-	print( occupied )
+	return( occupied )
 
 
-part_two()
+## main ##
+dataMap = list()
+for line in data:
+	s = list(line)
+	dataMap.append( s )
+
+print( part_one( dataMap ) )
+print( part_two( dataMap ) )
 
 
