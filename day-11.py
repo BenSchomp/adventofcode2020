@@ -122,22 +122,22 @@ def calc_neighbors( m, p, los ):
 			if dx == 0 and dy == 0:
 				continue
 
-			curX = p[0] + dx
-			curY = p[1] + dy
+			x = p[0] + dx
+			y = p[1] + dy
 
 			while True:
-				if curX < 0 or curX >= width or curY < 0 or curY >= height:
+				if x < 0 or x >= width or y < 0 or y >= height:
 					break
 
-				if m[curY][curX] == '#':
+				if m[y][x] == '#':
 					count += 1
 					break
 
-				if not los or m[curY][curX] == 'L':
+				if not los or m[y][x] == 'L':
 					break
 
-				curX += dx
-				curY += dy 
+				x += dx
+				y += dy 
 
 	return count
 
@@ -146,21 +146,21 @@ def do_cycle( curMap, los, threshold ):
 	changed = False
 	occupied = 0
 
-	for curY in range(height):
-		for curX in range(width):
-			cell = curMap[curY][curX]
+	for y in range(height):
+		for x in range(width):
+			cell = curMap[y][x]
 
 			if cell != '.':
-				neighbors = calc_neighbors( curMap, (curX, curY), los )
+				neighbors = calc_neighbors( curMap, (x, y), los )
 
 				if cell == 'L' and neighbors == 0:
-					newMap[curY][curX] = '#'
+					newMap[y][x] = '#'
 					changed = True
 				elif cell == '#' and neighbors >= threshold:
-					newMap[curY][curX] = 'L'
+					newMap[y][x] = 'L'
 					changed = True
 
-			if newMap[curY][curX] == '#':
+			if newMap[y][x] == '#':
 				occupied += 1
 
 	return (newMap, changed, occupied)
