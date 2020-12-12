@@ -1,5 +1,3 @@
-import copy
-
 data = [
 'LLLLLLLLLLLLLLLLLLLLLLL.LLLLLLL.L.LLLLL.LLLL.LLLLLLLLL..LLL.LLLLLLLLLLLLLL.LLLLLLLLL.LLL.LLLLLL',
 'LLLLLLLLLL.L.LLLLLLL.LL.LLLLLLL.LLLLLLLL.LLLLLLLLLLLLL.LLLLLLLLLLL.LLLLLLLL.LLLLLLLLLLLL.LLLLLL',
@@ -102,91 +100,85 @@ data = [
 'LLLLLLLLLLLLLLLLLL.LLLL.LLLLLLLLLLLLLLLLLLLLLLLLLLLLLL.LLLL.LLLLLL.LLLLLLLL..LLLLLL.LLLL.L.LLLL',
 ]
 
-#data = ['L.LL.LL.LL', 'LLLLLLL.LL', 'L.L.L..L..', 'LLLL.LL.LL', 'L.LL.LL.LL', 'L.LLLLL.LL', '..L.L.....', 'LLLLLLLLLL', 'L.LLLLLL.L', 'L.LLLLL.LL', ]
+#data = [ 'L.LL.LL.LL', 'LLLLLLL.LL', 'L.L.L..L..', 'LLLL.LL.LL', 'L.LL.LL.LL', 'L.LLLLL.LL', '..L.L.....', 'LLLLLLLLLL', 'L.LLLLLL.L', 'L.LLLLL.LL' ]
 
 height = len(data)
 width = len(data[0])
 
-def display( m ):
-	for row in m:
-		for col in row:
-			print( col, end='' )
-		print()
-	print()
+def display( m ): # map
+  for row in m:
+    for col in row:
+      print( col, end='' )
+    print()
+  print()
 
-def calc_neighbors( m, p, los ):
-	count = 0
+def calc_neighbors( m, p, los ): # map, point, line-of-sight (T/F)
+  count = 0
 
-	for dx in [-1, 0, 1]:
-		for dy in [-1, 0, 1]:
-			if dx == 0 and dy == 0:
-				continue
+  for dx in [-1, 0, 1]:
+    for dy in [-1, 0, 1]:
+      if dx == 0 and dy == 0:
+        continue
 
-			x = p[0] + dx
-			y = p[1] + dy
+      x = p[0] + dx
+      y = p[1] + dy
 
-			while True:
-				if x < 0 or x >= width or y < 0 or y >= height:
-					break
+      while True:
+        if x < 0 or x >= width or y < 0 or y >= height:
+          break
 
-				if m[y][x] == '#':
-					count += 1
-					break
+        if m[y][x] == '#':
+          count += 1
+          break
 
-				if not los or m[y][x] == 'L':
-					break
+        if not los or m[y][x] == 'L':
+          break
 
-				x += dx
-				y += dy 
+        x += dx
+        y += dy 
 
-	return count
+  return count
 
-def do_cycle( curMap, los, threshold ):
-	newMap = copy.deepcopy(curMap)
-	changed = False
-	occupied = 0
+import copy
+def do_cycle( curMap, los, threshold ): # map, line-of-sight (T/F), neighbor count to trigger a "move"
+  newMap = copy.deepcopy(curMap)
+  changed = False
+  occupied = 0
 
-	for y in range(height):
-		for x in range(width):
-			cell = curMap[y][x]
+  for y in range(height):
+    for x in range(width):
+      cell = curMap[y][x]
 
-			if cell != '.':
-				neighbors = calc_neighbors( curMap, (x, y), los )
+      if cell != '.':
+        neighbors = calc_neighbors( curMap, (x, y), los )
 
-				if cell == 'L' and neighbors == 0:
-					newMap[y][x] = '#'
-					changed = True
-				elif cell == '#' and neighbors >= threshold:
-					newMap[y][x] = 'L'
-					changed = True
+        if cell == 'L' and neighbors == 0:
+          newMap[y][x] = '#'
+          changed = True
+        elif cell == '#' and neighbors >= threshold:
+          newMap[y][x] = 'L'
+          changed = True
 
-			if newMap[y][x] == '#':
-				occupied += 1
+      if newMap[y][x] == '#':
+        occupied += 1
 
-	return (newMap, changed, occupied)
-
-def part_one( floorplan ):
-	changed = True
-	while( changed ):
-		(floorplan, changed, occupied) = do_cycle( floorplan, False, 4 )
-
-	return( occupied )
-
-def part_two( floorplan ):
-	changed = True
-	while( changed ):
-		(floorplan, changed, occupied) = do_cycle( floorplan, True, 5 )
-
-	return( occupied )
-
+  return (newMap, changed, occupied)
 
 ## main ##
 dataMap = list()
 for line in data:
-	s = list(line)
-	dataMap.append( s )
+  s = list(line)
+  dataMap.append( s )
 
-print( part_one( dataMap ) )
-print( part_two( dataMap ) )
+part_one = (False, 4)
+part_two = (True, 5)
+
+for part in [ part_one, part_two ]:
+  floorplan = copy.deepcopy(dataMap)
+  changed = True
+  while( changed ):
+    (floorplan, changed, occupied) = do_cycle( floorplan, part[0], part[1] )
+
+  print( occupied )
 
 

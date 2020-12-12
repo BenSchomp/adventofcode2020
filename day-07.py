@@ -599,62 +599,62 @@ my_input = [
 #my_input = ['light red bags contain 1 bright white bag, 2 muted yellow bags.', 'dark orange bags contain 3 bright white bags, 4 muted yellow bags.', 'bright white bags contain 1 shiny gold bag.', 'muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.', 'shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.', 'dark olive bags contain 3 faded blue bags, 4 dotted black bags.', 'vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.', 'faded blue bags contain no other bags.', 'dotted black bags contain no other bags.', ]
 
 def walk_up( tree, color ):
-	result = set()
-	parents = tree[color][0]
+  result = set()
+  parents = tree[color][0]
 
-	# base case
-	if len(parents) == 0:
-		return result
+  # base case
+  if len(parents) == 0:
+    return result
 
-	else:
-		for p in parents:
-			result.add(p)
-			result.update( walk_up( tree, p ) )
+  else:
+    for p in parents:
+      result.add(p)
+      result.update( walk_up( tree, p ) )
 
-	return result
+  return result
 
 def walk_down( tree, color ):
-	result = []
-	children = tree[color][1]
+  result = []
+  children = tree[color][1]
 
-	# base case
-	if len(children) == 0:
-		return result
+  # base case
+  if len(children) == 0:
+    return result
 
-	else:
-		for c in children:
-			result.append(c)
-			result.extend( walk_down( tree, c ) )
+  else:
+    for c in children:
+      result.append(c)
+      result.extend( walk_down( tree, c ) )
 
-	return result
+  return result
 
 ## main ##
 bags = dict()
 
 # load input #
 for line in my_input:
-	(color, rhs) = line.split(' bags contain ')
-	children = rhs.split( ', ' )
+  (color, rhs) = line.split(' bags contain ')
+  children = rhs.split( ', ' )
 
-	if not color in bags:
-		bags[color] = [[], []] # [parents, children]
+  if not color in bags:
+    bags[color] = [[], []] # [parents, children]
 
-	for child in children:
-		(lhs, rhs) = child.split(' bag')
+  for child in children:
+    (lhs, rhs) = child.split(' bag')
 
-		if lhs != 'no other':
-			x = lhs.find(' ')
-			c_qty = int(lhs[0:x])
-			c_color = lhs[x+1:]
+    if lhs != 'no other':
+      x = lhs.find(' ')
+      child_qty = int(lhs[0:x])
+      child_color = lhs[x+1:]
 
-			# add children
-			bags[color][1].extend( [c_color]*c_qty )
+      # add children
+      bags[color][1].extend( [child_color]*child_qty )
 
-			# add this as the child's parent
-			if not c_color in bags:
-				bags[c_color] = [[], []] # [parents, children]
+      # add this node as the child's parent
+      if not child_color in bags:
+        bags[child_color] = [[], []] # [parents, children]
 
-			bags[c_color][0].append( color )
+      bags[child_color][0].append( color )
 
 # part one #
 needle = 'shiny gold'
@@ -664,3 +664,4 @@ print( len(outers) )
 # part two #
 carry = walk_down( bags, needle )
 print( len(carry) )
+
